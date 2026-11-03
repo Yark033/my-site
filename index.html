@@ -79,13 +79,14 @@
     }
 
     /* ---------- Карточка с планом обучения ---------- */
-    .plan {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 28px;
-      margin-top: 24px;
-    }
+   .plan {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  margin-top: 24px;
+  transition: border-color .3s, box-shadow .3s;
+}
     h2 { font-size: 1.5rem; margin: 0 0 4px; }
     .hint { color: var(--muted); margin: 0 0 20px; font-family: system-ui, sans-serif; font-size: .95rem; }
 
@@ -108,6 +109,11 @@
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; }
     }
+
+.plan:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
   </style>
 </head>
 
@@ -125,6 +131,8 @@
 
         <label for="nameInput">Впишите своё имя - заголовок изменится сразу</label>
         <input id="nameInput" type="text" placeholder="Например, Алихан" autocomplete="off">
+        <p><button id="phraseBtn" type="button">Дай совет</button></p>
+<p id="phrase"></p>
       </section>
 
       <section class="plan" aria-labelledby="planTitle">
@@ -165,7 +173,7 @@
     });
 
     /* ---------- Имя в заголовке ---------- */
-    const DEFAULT_NAME = 'будущий разработчик';
+    const DEFAULT_NAME = 'начинающий программист';
     const nameEl = document.getElementById('name');
     const nameInput = document.getElementById('nameInput');
 
@@ -234,6 +242,17 @@
     });
 
     updateProgress();
+    console.log('Выполнено шагов:', done.length);
+    const phrases = [
+  'Маленький шаг каждый день лучше, чем большой раз в месяц.',
+  'Ошибка в консоли - это подсказка, а не провал.',
+  'Сломал код? Нажми Ctrl+Z и попробуй снова.'
+];
+
+document.getElementById('phraseBtn').addEventListener('click', function () {
+  const random = phrases[Math.floor(Math.random() * phrases.length)];
+  document.getElementById('phrase').textContent = random;
+});
   </script>
 </body>
 </html>
