@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <!-- Эта строка делает сайт удобным на телефоне -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Моя страница разработчика</title>
+
+  <style>
+    /* ---------- Цвета хранятся в переменных: поменяли тут - поменялось везде ---------- */
+    :root {
+      --bg: #eef2f7;
+      --card: #ffffff;
+      --ink: #14213d;
+      --muted: #55627f;
+      --accent: #e63946;
+      --sun: #ffc93c;
+      --line: #d5dcea;
+    }
+    /* Тёмная тема: переопределяем только те цвета, что отличаются */
+    :root[data-theme="dark"] {
+      --bg: #0f1a36;
+      --card: #172449;
+      --ink: #eef2f7;
+      --muted: #a6b3d3;
+      --accent: #ff8a94;
+      --line: #2b3b6b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+      transition: background .3s, color .3s;
+    }
+
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 20px 64px; }
+
+    /* ---------- Шапка ---------- */
+    header { display: flex; justify-content: space-between; align-items: center; }
+    .brand { font: 700 1rem system-ui, sans-serif; letter-spacing: .02em; }
+
+    button {
+      font: 600 .95rem system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--card);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    button:hover { background: var(--sun); color: #14213d; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    /* ---------- Главный экран ---------- */
+    .hero { padding: 72px 0 40px; }
+    h1 {
+      font-size: clamp(2.2rem, 7vw, 3.8rem); /* размер плавно меняется от телефона к монитору */
+      line-height: 1.1;
+      margin: 0 0 16px;
+    }
+    /* Имя подчёркнуто жёлтым маркером: это то, что вы меняете сами */
+    #name { background: linear-gradient(transparent 62%, var(--sun) 62%); }
+    .lead { color: var(--muted); font-size: 1.15rem; max-width: 34em; margin: 0 0 28px; }
+
+    label { display: block; font: 600 .95rem system-ui, sans-serif; margin-bottom: 6px; }
+    input {
+      width: 100%; max-width: 360px;
+      font: 1.05rem system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+
+    /* ---------- Карточка с планом обучения ---------- */
+    .plan {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 28px;
+      margin-top: 24px;
+    }
+    h2 { font-size: 1.5rem; margin: 0 0 4px; }
+    .hint { color: var(--muted); margin: 0 0 20px; font-family: system-ui, sans-serif; font-size: .95rem; }
+
+    .bar { height: 12px; background: var(--line); border-radius: 999px; overflow: hidden; }
+    .bar > div { height: 100%; width: 0; background: var(--accent); transition: width .4s; }
+    #count { font: 600 .9rem system-ui, sans-serif; margin: 8px 0 20px; }
+
+    ul { list-style: none; margin: 0; padding: 0; }
+    li { border-top: 1px solid var(--line); }
+    li label {
+      display: flex; gap: 12px; align-items: center;
+      font: 400 1.05rem Georgia, serif;
+      padding: 14px 0; margin: 0; cursor: pointer;
+    }
+    li input { width: 22px; height: 22px; accent-color: var(--accent); flex: none; }
+    li input:checked + span { text-decoration: line-through; color: var(--muted); }
+
+    footer { margin-top: 40px; color: var(--muted); font: .9rem system-ui, sans-serif; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <span class="brand">my-site</span>
+      <button id="theme" type="button">Тёмная тема</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Привет, я <span id="name">будущий разработчик</span></h1>
+        <p class="lead">Учусь делать сайты с нуля. Эта страница - мой первый проект, и она уже умеет запоминать, что я сделал.</p>
+
+        <label for="nameInput">Впишите своё имя - заголовок изменится сразу</label>
+        <input id="nameInput" type="text" placeholder="Например, Алихан" autocomplete="off">
+      </section>
+
+      <section class="plan" aria-labelledby="planTitle">
+        <h2 id="planTitle">Мой путь в разработку</h2>
+        <p class="hint">Отмечайте шаги галочкой. Прогресс сохранится, даже если закрыть вкладку.</p>
+        <div class="bar" role="progressbar" aria-label="Прогресс" aria-valuemin="0" aria-valuemax="100"><div id="fill"></div></div>
+        <p id="count"></p>
+        <ul id="steps"></ul>
+      </section>
+    </main>
+
+    <footer>Сделано вручную в VS Code.</footer>
+  </div>
+
+  <script>
+
+    /* ---------- Вспомогательные функции: память браузера (localStorage) ---------- */
+    /* try/catch нужен, чтобы страница не ломалась, если память недоступна */
+    function load(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+    function save(key, value) { try { localStorage.setItem(key, value); } catch (e) {} }
+
+    /* ---------- Тёмная и светлая тема ---------- */
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('theme');
+
+    function setTheme(theme) {
+      root.setAttribute('data-theme', theme);
+      themeBtn.textContent = theme === 'dark' ? 'Светлая тема' : 'Тёмная тема';
+      save('theme', theme);
+    }
+
+    // Берём сохранённую тему, а если её нет - ту, что стоит в системе
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(load('theme') || (systemDark ? 'dark' : 'light'));
+
+    themeBtn.addEventListener('click', function () {
+      setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+
+    /* ---------- Имя в заголовке ---------- */
+    const DEFAULT_NAME = 'будущий разработчик';
+    const nameEl = document.getElementById('name');
+    const nameInput = document.getElementById('nameInput');
+
+    function showName(value) {
+      nameEl.textContent = value.trim() || DEFAULT_NAME;
+    }
+
+    nameInput.value = load('name') || '';
+    showName(nameInput.value);
+
+    // Событие "input" срабатывает при каждом нажатии клавиши
+    nameInput.addEventListener('input', function () {
+      showName(nameInput.value);
+      save('name', nameInput.value);
+    });
+
+    /* ---------- План обучения ---------- */
+ const steps = [
+  'Страница на HTML',
+  'Оформление в CSS',
+  'Первый скрипт на JavaScript',
+  'Сайт в интернете (GitHub Pages)',
+  'Git: сохранять версии кода',
+  'Свой проект с нуля',
+  'Выучить основы React'
+];
+
+    // Какие шаги отмечены, храним списком номеров, например [0, 1]
+    let done;
+    try { done = JSON.parse(load('done') || '[]'); } catch (e) { done = []; }
+
+    const list = document.getElementById('steps');
+    const fill = document.getElementById('fill');
+    const count = document.getElementById('count');
+    const bar = document.querySelector('.bar');
+
+    function updateProgress() {
+      const percent = Math.round(done.length / steps.length * 100);
+      fill.style.width = percent + '%';
+      bar.setAttribute('aria-valuenow', percent);
+      count.textContent = 'Выполнено: ' + done.length + ' из ' + steps.length;
+      save('done', JSON.stringify(done));
+    }
+
+    // Для каждого шага создаём пункт списка с галочкой
+    steps.forEach(function (text, index) {
+      const li = document.createElement('li');
+      const label = document.createElement('label');
+      const box = document.createElement('input');
+      const span = document.createElement('span');
+
+      box.type = 'checkbox';
+      box.checked = done.includes(index);
+      span.textContent = text;
+
+      box.addEventListener('change', function () {
+        done = box.checked
+          ? done.concat(index)
+          : done.filter(function (i) { return i !== index; });
+        updateProgress();
+      });
+
+      label.append(box, span);
+      li.append(label);
+      list.append(li);
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>
